@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 public class Main {
     public static void main(String[] args) {
 
-        List<Apple> appleList = Arrays.asList(new Apple("green", 170), new Apple("green", 150), new Apple("red", 180));
+        List<Apple> appleList = Arrays.asList(new Apple("green", 190), new Apple("green", 150), new Apple("red", 180));
         Main m = new Main();
         /**
          * 方法引用谓词过滤
@@ -46,7 +46,7 @@ public class Main {
         // comparator(比较器) 排序
         // 在Java 8中，List自带了一个sort(分类)方法。sort的行为可以用java.util.Comparator对象来参数化
 
-        // 匿名类
+        // 匿名类, 重量排序
         appleList.sort(new Comparator<Apple>() {
             @Override
             public int compare(Apple o1, Apple o2) {
@@ -54,6 +54,26 @@ public class Main {
             }
         });
         System.out.println(appleList);
+
+        // 颜色排序
+        appleList.sort((a1, a2)->a1.getColor().compareTo(a2.getColor()));
+        System.out.println(appleList);
+
+        // Runable 线程代码块
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Hello world");
+            }
+        });
+
+        t.start();
+
+        Thread t2 = new Thread(()-> System.out.println("Hello world"));
+
+        t2.start();
+
+        new Thread(()-> System.out.println("Hello world")).start();
 
     }
 
