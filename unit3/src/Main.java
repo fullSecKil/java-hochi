@@ -1,11 +1,12 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 
@@ -36,6 +37,7 @@ public class Main {
         // 类型推断，上下文推断类型
 
         // 方法引用, 管中窥豹
+        Apple redApple = new Apple("red", 215);
         List<Apple> appleList = Arrays.asList(new Apple("green", 190), new Apple("green", 150), new Apple("red", 180));
         // 排序
         appleList.sort(comparing(Apple::getWeight));
@@ -48,16 +50,71 @@ public class Main {
 
         // 方法引用1类 指向静态方法的方法引用
         System.out.println(Integer.parseInt("12345"));
-        Function<String, Integer> parse = String::length;
+        Function<String, Integer> parse = Integer::parseInt;
         parse.apply("564353");
 
         // 方法引用2类 任意类型实例方法
         Function<String, Integer> rstLen = String::length;
         rstLen.apply("xueruizuishuai");
-
-        // 方法引用3类 现有对象的实例方法引用
         Function<Apple, Integer> appGetWeight = Apple::getWeight;
         appGetWeight.apply(new Apple("red", 156));
+
+        // 方法引用3类 现有对象的实例方法引用
+        // supplier生产者， consumer消费者
+        Supplier<String> color = redApple::getColor;
+        color.get();
+        System.out.println(color.get());
+
+        List<String> str = Arrays.asList("a", "b", "A", "B");
+        // 忽略大小写排序
+        str.sort((s1, s2)->s1.compareToIgnoreCase(s2));
+
+        str.sort(String::compareToIgnoreCase);
+
+        // 包含返回谓词
+        BiPredicate<List<String>, String> contains = List::contains;
+        Boolean c = contains.test(Arrays.asList("wozuishuai", "xuerui"), "xuerui");
+        System.out.println(c);
+
+        // 构造函数引用
+
+        // 延时构造
+        Supplier<Apple> c1 = Apple::new;
+        c1.get();
+
+        Supplier<Apple> c2 = ()-> new Apple("red", 158);
+
+        BiFunction<String, Integer, Apple> apple3 = Apple::new;
+        apple3.apply("yellow", 210);
+
+        Map<String, Integer> appleMap = new HashMap<>();
+        appleMap.put("red", 180);
+        appleMap.put("green", 210);
+        appleMap.put("yellow", 150);
+
+        // 传递元素生成APple
+        List<Apple> appleList1 = m.map(appleMap, apple3);
+        System.out.println(appleList1);
+
+        appleMap.entrySet().parallelStream().map(a->new Apple(a.getKey(), a.getValue())).collect(Collectors.toList());
+
+        // 排序，sort需要Comparator 签名对象来比较
+        // 类实现跳过，匿名类开始
+        appleList.sort(new Comparator<Apple>() {
+            @Override
+            public int compare(Apple o1, Apple o2) {
+                return o1.getWeight().compareTo(o2.getWeight());
+            }
+        });
+        // lambda表达式 Comparator函数式接口 (T, T)->int 函数描述
+        appleList.sort((Apple a1, Apple a2)->a1.getColor().compareToIgnoreCase(a2.getColor()));
+        // java编译器通过上下文推断参数类型
+        appleList.sort((a1, a2)->a1.getWeight().compareTo(a2.getWeight()));
+        // comparing 提取对象值生成Comparator对象
+        appleList.sort(comparing(a->a.getWeight()));
+        // 方法引用
+        appleList.sort(comparing(Apple::getWeight));
+        //
 
     }
 
@@ -82,6 +139,15 @@ public class Main {
         List<R> result = new ArrayList<>();
         for (T s: list){
             result.add(f.apply(s));
+        }
+        return result;
+    }
+
+    // 创建Apple 遍历抽象类
+    public <T, U, R> List<R> map(Map<T, U> map, BiFunction<T, U, R> f){
+        List<R> result = new ArrayList<>();
+        for(Map.Entry<T, U> entry : map.entrySet()){
+            result.add(f.apply(entry.getKey(), entry.getValue()));
         }
         return result;
     }

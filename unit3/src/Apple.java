@@ -1,3 +1,5 @@
+import java.util.Map;
+
 /**
  * @file: Apple.class
  * @author: Dusk
@@ -8,9 +10,16 @@ public class Apple {
     private String color;
     private Integer weight;
 
+    public Apple(){
+
+    }
+
     public Apple(String color, Integer weight) {
         this.color = color;
         this.weight = weight;
+    }
+
+    public Apple(Map.Entry<String,Integer> stringIntegerEntry) {
     }
 
     public String getColor() {
