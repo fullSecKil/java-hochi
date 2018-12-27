@@ -114,8 +114,38 @@ public class Main {
         appleList.sort(comparing(a->a.getWeight()));
         // 方法引用
         appleList.sort(comparing(Apple::getWeight));
-        //
+        // 逆序 reversed
+        appleList.sort(comparing(Apple::getWeight).reversed());
 
+        // 比较器链，两个一样重再提供比较
+        appleList.sort(comparing(Apple::getWeight).reversed().thenComparing(Apple::getColor));
+
+        // 谓词复合 Predicate接口
+        // negate(否定)
+        Predicate<Apple> redApple2 = a-> "red".equals(a.getColor());
+        // 现有predicate对象redApple的非
+        Predicate<Apple> notRedApple = redApple2.negate();
+        // and 组合红色切比较重
+        Predicate<Apple> redAndHeavyApple = redApple2.and(a->a.getWeight()>150);
+
+        // 函数复合 Function接口
+        // andThen g(f(x)) f函数输出g函数输入
+        Function<Integer, Integer> f = x -> x+1;
+        Function<Integer, Integer> g = x -> x*2;
+        Function<Integer, Integer> h = f.andThen(g);
+        int result = h.apply(1);        //结果4
+
+        // compose(构成) 相反f(g(x))
+        Function<Integer, Integer> h2 = f.compose(g);
+
+        // 信的文本转换
+        Function<String, String> addHeader = Letter::addHeader;
+        // 先加上抬头，在进行拼写检查，最后加上落款
+        Function<String, String> transformationPipeline = addHeader.andThen(Letter::checkSpelling).andThen(Letter::addFooter);
+
+        // 落款，检查，抬头
+        Function<String, String> transformationPipeline2= addHeader.compose(Letter::checkSpelling).compose(Letter::addFooter);
+        
     }
 
     public String processFile() throws IOException {
