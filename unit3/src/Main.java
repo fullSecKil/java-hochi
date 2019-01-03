@@ -145,7 +145,7 @@ public class Main {
 
         // 落款，检查，抬头
         Function<String, String> transformationPipeline2= addHeader.compose(Letter::checkSpelling).compose(Letter::addFooter);
-        
+
     }
 
     public String processFile() throws IOException {
